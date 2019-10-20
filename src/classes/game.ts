@@ -9,22 +9,20 @@ export class Game {
     private stage = new Stage('game-view');
     private mainCharacter: any;
 
-    constructor (cont: Controller) {
+    constructor(cont: Controller) {
         this.cont = cont;
     }
 
-    public start () {
+    public start() {
         this.mainCharacter = new MainCharacter(this.cont, 'character01');
         this.stage.addChild(this.mainCharacter.getSprite());
         Ticker.interval = 60;
-        Ticker.addEventListener("tick", () => { this.tick(); });
+        Ticker.addEventListener('tick', () => { this.tick(); });
     }
 
-    public tick () {
+    public tick() {
         this.mainCharacter.update();
         this.stage.update();
     }
-
-    
 
 }

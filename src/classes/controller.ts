@@ -10,15 +10,15 @@ export class Controller {
     private loader = new Loader(this);
     private input = new Input(this);
 
-    public run () {
+    public run() {
         this.loader.processQueue();
     }
 
-    public onAssetsLoaded (assets: any) {
+    public onAssetsLoaded(assets: any) {
         this.start();
     }
 
-    public start () {
+    public start() {
         this.game.start();
         this.input.init();
     }

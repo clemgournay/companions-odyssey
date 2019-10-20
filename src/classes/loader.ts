@@ -13,25 +13,15 @@ export class Loader {
 
     constructor(cont: Controller) {
         this.cont = cont;
-        for (const id of Object.keys(this.assets)) {
-            const asset: IAsset = this.assets[id];
-            let src: string;
-            switch (asset.type) {
-                case 'charset':
-                    src = require('../../assets/img/charset/' + asset.filename);
-                    break;
-                default:
-                    src = 'not-found';
-                    break;
-            }
-
+        for (const id of Object.keys(this.assets.images.charsets)) {
+            const assets = this.assets.images.charsets;
             const item: IQueueItem = {
+                id,
+                nature: 'image',
+                type: 'charset',
+                src: require('../../assets/img/charset/' + assets[id]),
                 endStatus: false,
                 hasError: false,
-                id,
-                nature: this.assets[id].nature,
-                src,
-                type: this.assets[id].type,
             };
             this.queue.push(item);
         }
@@ -74,9 +64,10 @@ export class Loader {
     public getLoadedAssets() {
         return this.loadedAssets;
     }
-  
+
     private getQueueIndex(id: string) {
-      let i = 0, found = false;
+      let i = 0;
+      let found = false;
       while (!found && i < this.queue.length) {
         if (this.queue[i].id === id) {
           found = true;
