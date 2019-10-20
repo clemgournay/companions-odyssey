@@ -1,6 +1,13 @@
+import { Controller } from "./controller";
+
 export class Input {
     
-    keys:any = {};
+    private cont: Controller;
+    private keys:any = {};
+
+    constructor(cont: Controller) {
+        this.cont = cont;
+    }
 
     public init () {
         window.addEventListener('keydown', (e: any) => {

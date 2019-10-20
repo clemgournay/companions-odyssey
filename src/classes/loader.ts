@@ -1,4 +1,4 @@
-import { Game } from '@classes/game'
+import { Controller } from '@classes/controller';
 
 import { IAsset } from '@models/asset';
 import { IQueueItem } from '../models/queue-item';
@@ -9,10 +9,10 @@ export class Loader {
     private queue: IQueueItem[] = [];
     private loading = false;
     private loadedAssets: any = {};
-    private game: Game;
+    private cont: Controller;
 
-    constructor(game: Game) {
-        this.game = game;
+    constructor(cont: Controller) {
+        this.cont = cont;
         for (const id of Object.keys(this.assets)) {
             const asset: IAsset = this.assets[id];
             let src: string;
@@ -68,7 +68,7 @@ export class Loader {
     }
 
     public finishedLoading() {
-        this.game.onAssetsLoaded(this.loadedAssets);
+        this.cont.onAssetsLoaded(this.loadedAssets);
     }
 
     public getLoadedAssets() {

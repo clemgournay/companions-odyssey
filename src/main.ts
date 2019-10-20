@@ -1,6 +1,6 @@
-import { Game } from './classes/game';
+import { Controller } from './classes/controller';
 
 window.onload = () => {
-    const game = new Game();
+    const game = new Controller();
     game.run();
 };
