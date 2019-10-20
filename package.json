@@ -1,0 +1,36 @@
+{
+  "name": "companions-odyssey",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "dependencies": {
+    "@createjs/easeljs": "^2.0.0-beta.4",
+    "@types/node": "^12.11.1",
+    "request-promise": "^4.2.4",
+    "request-promise-native": "^1.0.7",
+    "tslint": "^5.20.0"
+  },
+  "devDependencies": {
+    "css-loader": "^3.2.0",
+    "file-loader": "^4.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.8.0",
+    "node-sass": "^4.12.0",
+    "postcss-loader": "^3.0.0",
+    "sass": "^1.23.0",
+    "sass-loader": "^8.0.0",
+    "style-loader": "^1.0.0",
+    "ts-loader": "^6.2.0",
+    "typescript": "^3.6.4",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.8.2"
+  },
+  "scripts": {
+    "dev": "webpack-dev-server --config webpack.config.js",
+    "build": "webpack --config webpack.config.js"
+  },
+  "author": "Clément Gournay",
+  "license": "ISC",
+  "keywords": [],
+  "description": ""
+}
