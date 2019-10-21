@@ -1,8 +1,9 @@
 import { Controller } from './controller';
 import { Log } from './log';
+import { Loader } from './loader';
 import { Character } from './character';
 import { MainCharacter } from './main-character';
-import { Loader } from './loader';
+import { ICell } from './cell';
 
 export class Map {
 
@@ -14,6 +15,7 @@ export class Map {
     private assets: any;
     private mainCharacter: MainCharacter;
     private pnjList: Character[];
+    private grid: ICell[];
 
     constructor(cont: Controller, id: string, name: string) {
         this.cont = cont;

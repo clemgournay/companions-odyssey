@@ -1,6 +1,7 @@
 {
     "start": {
         "images": {
+            "tileset": "field.png",
             "charsets": {
                 "character01": "01.png",
                 "character02": "02.png",
