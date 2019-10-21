@@ -1,34 +1,37 @@
 
-
 import { Game } from './game';
-import { Loader } from './loader';
 import { Input } from './input';
+import { Log } from './log';
 
 export class Controller {
 
+    private log = new Log('MAIN');
     private game = new Game(this);
-    private loader = new Loader(this);
     private input = new Input(this);
 
-    public run() {
-        this.loader.processQueue();
-    }
-
-    public onAssetsLoaded(assets: any) {
-        this.start();
-    }
-
-    public start() {
-        this.game.start();
+    public init() {
         this.input.init();
+        this.game.loadAssets();
     }
 
-    public getLoadedAssets() {
-        return this.loader.getLoadedAssets();
+    public onGameLoaded() {
+        this.game.start();
     }
 
     public getInputKeys() {
         return this.input.getKeys();
+    }
+
+    public getGameAssetsDef(id: string) {
+        return this.game.getAssetsDef(id);
+    }
+
+    public getMapAssets() {
+        return this.game.getMapAssets();
+    }
+
+    public onMapLoaded() {
+        return this.game.onMapLoaded();
     }
 
 }

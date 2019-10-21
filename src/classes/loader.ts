@@ -1,20 +1,37 @@
 import { Controller } from '@classes/controller';
+import { Log } from './log';
 
-import { IAsset } from '@models/asset';
 import { IQueueItem } from '../models/queue-item';
 
 export class Loader {
 
-    private assets = require('../config/assets.json');
-    private queue: IQueueItem[] = [];
-    private loading = false;
-    private loadedAssets: any = {};
     private cont: Controller;
+    private log: Log;
+    private assetsDef: any;
+    private queue: IQueueItem[];
+    private loading = false;
+    private assets: any;
+    private length: number;
+    private count: number;
+    private errors: any[];
+    private completeCallback: any;
 
     constructor(cont: Controller) {
         this.cont = cont;
-        for (const id of Object.keys(this.assets.images.charsets)) {
-            const assets = this.assets.images.charsets;
+        this.log = new Log('LOADER');
+        this.queue = [];
+        this.assets = {};
+        this.length = 0;
+        this.count = 0;
+        this.errors = [];
+    }
+
+    public loadAssets(completeCallback: any) {
+        this.assetsDef = this.cont.getGameAssetsDef('start');
+        this.completeCallback = completeCallback;
+        this.length += Object.keys(this.assetsDef.images.charsets).length;
+        for (const id of Object.keys(this.assetsDef.images.charsets)) {
+            const assets = this.assetsDef.images.charsets;
             const item: IQueueItem = {
                 id,
                 nature: 'image',
@@ -25,44 +42,54 @@ export class Loader {
             };
             this.queue.push(item);
         }
+        this.processQueue();
     }
 
     public processQueue() {
         if (!this.loading) {
             this.loading = true;
-            this.queue.forEach((item: IQueueItem) => {
+            this.queue.forEach((item: IQueueItem, index: number) => {
+                this.log.info('Loading ' + (index + 1) + ' files of ' + this.length + '...');
                 switch (item.nature) {
                     case 'image':
                         item.el = new Image();
+                        item.el.index = index;
                         item.el.src = item.src;
-                        item.el.onload = (() => {
-                            item.endStatus = true;
-                            this.loadedAssets[item.id] = item;
-                            this.progress(item.id);
+                        item.el.onload = ((e: any) => {
+                            const el: any = e.path[0];
+                            const refItem = this.queue[el.index];
+                            refItem.endStatus = true;
+                            this.assets[refItem.id] = refItem;
+                            this.assets[refItem.id].endStatus = true;
+                            this.count++;
+                            this.progress();
                         });
-                        item.el.onerror = ((res: any) => {
-                            item.endStatus = true;
-                            item.hasError = true;
+                        item.el.onerror = ((e: any) => {
+                            const el: any = e.path[0];
+                            const refItem = this.queue[el.index];
+                            refItem.endStatus = true;
+                            refItem.hasError = true;
+                            this.errors.push({code: 'load-error', refItem});
+                            this.count++;
+                            this.progress();
                         });
                 }
             });
         }
     }
 
-    public progress(id: string) {
-        const queueIndex = this.getQueueIndex(id);
-        this.queue.splice(queueIndex, 1);
-        if (this.queue.length === 0) {
-          this.finishedLoading();
+    public progress() {
+        if (this.count === this.length) {
+            if (this.errors.length === 0) {
+                this.completeCallback({result: 'success', assets: this.assets});
+            } else {
+                this.completeCallback({result: 'fail', assets: this.assets, errors: this.errors});
+            }
         }
     }
 
-    public finishedLoading() {
-        this.cont.onAssetsLoaded(this.loadedAssets);
-    }
-
     public getLoadedAssets() {
-        return this.loadedAssets;
+        return this.assets;
     }
 
     private getQueueIndex(id: string) {

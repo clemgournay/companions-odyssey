@@ -1,17 +1,17 @@
-import { Controller } from "./controller";
+import { Controller } from './controller';
 
 export class Input {
-    
+
     private cont: Controller;
-    private keys:any = {};
+    private keys: any;
 
     constructor(cont: Controller) {
         this.cont = cont;
+        this.keys = {};
     }
 
-    public init () {
+    public init() {
         window.addEventListener('keydown', (e: any) => {
-            e.preventDefault();
             this.keys[e.code] = true;
         });
         window.addEventListener('keyup', (e: any) => {
@@ -20,7 +20,7 @@ export class Input {
         });
     }
 
-    public getKeys () {
+    public getKeys() {
         return this.keys;
     }
 }

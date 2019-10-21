@@ -5,6 +5,7 @@ import { Controller } from '@classes/controller';
 export class Character {
 
     protected cont: Controller;
+    protected id: string;
     protected direction = 'down';
     protected speed = 2;
     protected sprite: any;
@@ -12,9 +13,12 @@ export class Character {
 
     constructor(cont: Controller, id: string) {
         this.cont = cont;
-        const assets = this.cont.getLoadedAssets();
+        this.id = id;
+    }
+
+    public attachAssets(assets: any) {
         const spriteSheet = new SpriteSheet({
-            images: [assets[id].el],
+            images: [assets[this.id].el],
             frames: {width: 32, height: 32, regX: 0, regY: 0},
             animations: {
                 idleDown: [1, 1, 'idleDown'],
@@ -24,8 +28,8 @@ export class Character {
                 walkDown: [0, 2, 'walkDown'],
                 walkLeft: [3, 5, 'walkLeft'],
                 walkRight: [6, 8, 'walkRight'],
-                walkUp: [9, 11, 'walkUp']
-            }
+                walkUp: [9, 11, 'walkUp'],
+            },
         });
         this.sprite = new Sprite(spriteSheet, 'idleDown');
     }
