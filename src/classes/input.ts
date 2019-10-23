@@ -20,7 +20,13 @@ export class Input {
         });
     }
 
-    public getKeys() {
-        return this.keys;
+    public getProperty(property: string) {
+        let object: any;
+        switch (property) {
+            case 'keys':
+                object = this.keys;
+                break;
+        }
+        return object;
     }
 }

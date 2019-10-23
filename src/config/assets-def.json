@@ -1,14 +1,14 @@
 {
     "start": {
         "images": {
-            "tileset": "field.png",
+            "tileset": "field",
             "charsets": {
-                "character01": "01.png",
-                "character02": "02.png",
-                "character03": "03.png",
-                "character04": "04.png",
-                "character05": "05.png",
-                "character06": "06.png"
+                "character01": "01",
+                "character02": "02",
+                "character03": "03",
+                "character04": "04",
+                "character05": "05",
+                "character06": "06"
             }
         }
     }

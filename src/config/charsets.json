@@ -1,0 +1,10 @@
+{
+    "character01": {
+        "hitbox": {
+            "x": 8,
+            "y": 16,
+            "width": 16,
+            "height": 16
+        }
+    }
+}

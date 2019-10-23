@@ -27,17 +27,17 @@ export class Loader {
     }
 
     public loadAssets(completeCallback: any) {
-        this.assetsDef = this.cont.getGameAssetsDef('start');
+        this.assetsDef = this.cont.getGameProperty('assets-def', 'start');
         this.completeCallback = completeCallback;
         this.length += Object.keys(this.assetsDef.images.charsets).length;
         this.length++; // For map tileset
         const tileset: IQueueItem = {
-            id: 'tileset',
+            id: this.assetsDef.images.tileset,
             nature: 'image',
             type: 'tileset',
-            src: require('../../assets/img/tilesets/' + this.assetsDef.images.tileset),
+            src: require('../../assets/img/tilesets/' + this.assetsDef.images.tileset + '.png'),
             endStatus: false,
-            hasError: false
+            hasError: false,
         };
         this.queue.push(tileset);
         for (const id of Object.keys(this.assetsDef.images.charsets)) {
@@ -46,7 +46,7 @@ export class Loader {
                 id,
                 nature: 'image',
                 type: 'charset',
-                src: require('../../assets/img/charsets/' + assets[id]),
+                src: require('../../assets/img/charsets/' + assets[id] + '.png'),
                 endStatus: false,
                 hasError: false,
             };

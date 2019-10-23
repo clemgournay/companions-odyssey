@@ -1,5 +1,4 @@
 export interface ITileset {
-    i: number;
-    j: number;
+    index: number;
     wall: boolean;
 }

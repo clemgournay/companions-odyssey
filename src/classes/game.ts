@@ -1,25 +1,26 @@
-import { Stage, Ticker } from '@createjs/easeljs';
-
 import { Controller } from './controller';
 import { Log } from './log';
 import { Map } from './map';
+
+import gameConfig from '../config/game.json';
 
 export class Game {
 
     private cont: Controller;
     private log: Log;
-    private stage = new Stage('game-view');
-    private assetsDef: any;
     private maps: any;
+    private assetsDef: any;
     private currentMap: Map;
+    private config: any;
 
     constructor(cont: Controller) {
         this.cont = cont;
         this.log = new Log('GAME');
         this.assetsDef = require('../config/assets-def.json');
-        this.maps = {start: new Map(this.cont, 'start', 'Start town')};
+        this.maps = {};
+        this.maps.start = new Map(this.cont, 'start', 'Start town');
         this.currentMap = this.maps.start;
-        Ticker.interval = 60;
+        this.config = gameConfig;
     }
 
     public loadAssets() {
@@ -33,21 +34,40 @@ export class Game {
     }
 
     public start() {
-        this.stage.addChild(this.currentMap.getMainCharacterSprite());
-        Ticker.addEventListener('tick', () => { this.tick(); });
+        // start
     }
 
-    public tick() {
+    public update() {
         this.currentMap.update();
-        this.stage.update();
     }
 
-    public getAssetsDef(id: string) {
-        return this.assetsDef[id];
+    public collision(object: any, direction: string) {
+        return this.currentMap.collision(object, direction);
     }
 
-    public getMapAssets() {
-        return this.currentMap.getAssets();
+    public getProperty(property: string, id: string) {
+        let object: any;
+        switch (property) {
+            case 'assets-def':
+                object = this.assetsDef[id];
+                break;
+            case 'config':
+                object = this.config;
+                break;
+        }
+        return object;
+    }
+
+    public getMainCharacterProperty(property: string) {
+        return this.currentMap.getMainCharacterProperty(property);
+    }
+
+    public getMapProperty(property: string) {
+        return this.currentMap.getProperty(property);
+    }
+
+    public getTilesetProperty(property: string) {
+        return this.currentMap.getTilesetProperty(property);
     }
 
 }

@@ -8,7 +8,7 @@ export class MainCharacter extends Character {
     }
 
     public update() {
-        const keys = this.cont.getInputKeys();
+        const keys = this.cont.getInputProperty('keys');
         if (keys.ArrowDown) {
             this.walk('down');
         } else if (keys.ArrowLeft) {
