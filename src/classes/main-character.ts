@@ -1,10 +1,12 @@
 import { Character } from './character';
 import { Controller } from '@classes/controller';
+import { Log } from './log';
 
 export class MainCharacter extends Character {
 
     constructor(cont: Controller, id: string) {
         super(cont, id);
+        this.log = new Log('MAIN-CHAR');
     }
 
     public update() {
@@ -20,6 +22,14 @@ export class MainCharacter extends Character {
         } else {
            this.idle();
          }
+    }
+
+    public walk(direction: string) {
+        super.walk(direction);
+        if (this.positionUpdated) {
+            this.log.info('Position updated');
+            this.cont.onCharPosUpdated();
+        }
     }
 
 }

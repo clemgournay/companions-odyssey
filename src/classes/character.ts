@@ -1,6 +1,7 @@
-import { Sprite, SpriteSheet, Shape } from '@createjs/easeljs';
+import { Sprite, SpriteSheet, Shape, Container } from '@createjs/easeljs';
 
 import { Controller } from '@classes/controller';
+import { Log } from './log';
 
 import charsetsConfig from '../config/charsets.json';
 
@@ -8,22 +9,28 @@ export class Character {
 
     protected cont: Controller;
     protected id: string;
+    protected log: Log;
     protected direction = 'down';
-    protected speed = 2;
+    protected container: any;
     protected sprite: any;
+    protected hitbox: any;
+    protected speed = 2;
     protected walking = false;
     protected charsetsConfig: any;
     protected config: any;
-    protected hitboxShape: any;
+    protected positionUpdated: boolean;
 
     constructor(cont: Controller, id: string) {
         this.cont = cont;
         this.id = id;
+        this.log = new Log('CHARACTER');
         this.charsetsConfig = charsetsConfig;
         this.config = this.charsetsConfig[this.id];
+        this.positionUpdated = false;
     }
 
     public attachAssets(assets: any) {
+        this.container = new Container();
         const spriteSheet = new SpriteSheet({
             images: [assets[this.id].el],
             frames: {width: 32, height: 32, regX: 0, regY: 0},
@@ -39,26 +46,33 @@ export class Character {
             },
         });
         this.sprite = new Sprite(spriteSheet, 'idleDown');
-        this.hitboxShape = new Shape();
-        this.hitboxShape.graphics.beginFill('red');
-        this.hitboxShape.graphics.drawRect(
-            this.sprite.x + this.config.hitbox.x,
-            this.sprite.y + this.config.hitbox.y,
-            this.config.hitbox.width,
-            this.config.hitbox.height,
+        this.hitbox = new Shape();
+        this.container.addChild(this.sprite);
+        this.container.addChild(this.hitbox);
+        this.hitbox.graphics.beginFill('red');
+        this.hitbox.graphics.drawRect(
+            0, 0,
+            this.config.hitbox.width, this.config.hitbox.height,
         );
-        this.hitboxShape.graphics.endFill();
-        this.hitboxShape.alpha = 0.6;
+        this.hitbox.graphics.endFill();
+        this.hitbox.alpha = 0.6;
+        this.hitbox.x = this.config.hitbox.x;
+        this.hitbox.y = this.config.hitbox.y;
+        this.hitbox.absoluteX = this.container.x + this.hitbox.x;
+        this.hitbox.absoluteY = this.container.y + this.hitbox.y;
+        this.hitbox.width = this.config.hitbox.width;
+        this.hitbox.height = this.config.hitbox.height;
     }
 
-    public walk(direction: string) {
+    protected walk(direction: string) {
 
+        const mapSize = this.cont.getMapProperty('size');
         const gameConfig = this.cont.getGameProperty('config');
-        const width = this.hitboxShape.graphics._instructions[1].w;
-        const height = this.hitboxShape.graphics._instructions[1].h;
         let noCollision: boolean;
 
         const hitboxPos: any = {
+            width: this.hitbox.width,
+            height: this.hitbox.height,
             topLeft: {
                 x: 0, y: 0,
             },
@@ -75,15 +89,18 @@ export class Character {
                     this.sprite.gotoAndPlay('walkDown');
                 }
 
-                hitboxPos.topLeft.x = this.hitboxShape.x;
-                hitboxPos.topLeft.y = this.hitboxShape.y + this.speed;
-                hitboxPos.bottomRight.x = hitboxPos.topLeft.x + width;
-                hitboxPos.bottomRight.y = hitboxPos.topLeft.y + height;
-                const dontReachesBottom = hitboxPos.bottomRight.y <= gameConfig.screenSize.height;
+                hitboxPos.topLeft.x = this.hitbox.absoluteX;
+                hitboxPos.topLeft.y = this.hitbox.absoluteY + this.speed;
+                hitboxPos.bottomRight.x = hitboxPos.topLeft.x + hitboxPos.width;
+                hitboxPos.bottomRight.y = hitboxPos.topLeft.y + hitboxPos.height;
+                const dontReachesBottom = hitboxPos.bottomRight.y <= mapSize.height;
                 noCollision = !this.cont.collision(hitboxPos, this.direction);
                 if (dontReachesBottom && noCollision) {
-                    this.sprite.y += this.speed;
-                    this.hitboxShape.y += this.speed;
+                    this.container.y += this.speed;
+                    this.hitbox.absoluteY = this.container.y + this.hitbox.y;
+                    this.positionUpdated = true;
+                } else {
+                    this.positionUpdated = false;
                 }
                 break;
             case 'left':
@@ -92,15 +109,18 @@ export class Character {
                     this.direction = 'left';
                     this.sprite.gotoAndPlay('walkLeft');
                 }
-                hitboxPos.topLeft.x = this.hitboxShape.x - this.speed;
-                hitboxPos.topLeft.y = this.hitboxShape.y;
-                hitboxPos.bottomRight.x = hitboxPos.topLeft.x + width;
-                hitboxPos.bottomRight.y = hitboxPos.topLeft.y + height;
-                const dontReachesLeft = hitboxPos.x >= 0;
+                hitboxPos.topLeft.x = this.hitbox.absoluteX - this.speed;
+                hitboxPos.topLeft.y = this.hitbox.absoluteY;
+                hitboxPos.bottomRight.x = hitboxPos.topLeft.x + hitboxPos.width;
+                hitboxPos.bottomRight.y = hitboxPos.topLeft.y + hitboxPos.height;
+                const dontReachesLeft = this.container.x >= 0;
                 noCollision = !this.cont.collision(hitboxPos, this.direction);
                 if (dontReachesLeft && noCollision) {
-                    this.sprite.x -= this.speed;
-                    this.hitboxShape.x -= this.speed;
+                    this.container.x -= this.speed;
+                    this.hitbox.absoluteX = this.container.x + this.hitbox.x;
+                    this.positionUpdated = true;
+                } else {
+                    this.positionUpdated = false;
                 }
                 break;
             case 'right':
@@ -109,16 +129,18 @@ export class Character {
                     this.direction = 'right';
                     this.sprite.gotoAndPlay('walkRight');
                 }
-                hitboxPos.topLeft.x = this.hitboxShape.x + this.speed;
-                hitboxPos.topLeft.y = this.hitboxShape.y;
-                hitboxPos.bottomRight.x = hitboxPos.topLeft.x + width;
-                hitboxPos.bottomRight.y = hitboxPos.topLeft.y + height;
+                hitboxPos.topLeft.x = this.hitbox.absoluteX + this.speed;
+                hitboxPos.topLeft.y = this.hitbox.absoluteY;
+                hitboxPos.bottomRight.x = hitboxPos.topLeft.x + hitboxPos.width;
+                hitboxPos.bottomRight.y = hitboxPos.topLeft.y + hitboxPos.height;
                 const dontReachesRight = hitboxPos.bottomRight.x <= gameConfig.screenSize.width;
-                console.log(hitboxPos.bottomRight.x)
                 noCollision = !this.cont.collision(hitboxPos, this.direction);
-                if (noCollision) {
-                    this.sprite.x += this.speed;
-                    this.hitboxShape.x += this.speed;
+                if (dontReachesRight && noCollision) {
+                    this.container.x += this.speed;
+                    this.hitbox.absoluteX = this.container.x + this.hitbox.x;
+                    this.positionUpdated = true;
+                } else {
+                    this.positionUpdated = false;
                 }
                 break;
             case 'up':
@@ -127,15 +149,18 @@ export class Character {
                     this.direction = 'up';
                     this.sprite.gotoAndPlay('walkUp');
                 }
-                hitboxPos.topLeft.x = this.hitboxShape.x;
-                hitboxPos.topLeft.y = this.hitboxShape.y - this.speed;
-                hitboxPos.bottomRight.x = hitboxPos.topLeft.x + width;
-                hitboxPos.bottomRight.y = hitboxPos.topLeft.y + height;
-                const dontReachesUp = hitboxPos.y >= 0;
+                hitboxPos.topLeft.x = this.hitbox.absoluteX;
+                hitboxPos.topLeft.y = this.hitbox.absoluteY - this.speed;
+                hitboxPos.bottomRight.x = hitboxPos.topLeft.x + hitboxPos.width;
+                hitboxPos.bottomRight.y = hitboxPos.topLeft.y + hitboxPos.height;
+                const dontReachesUp = this.container.y >= 0;
                 noCollision = !this.cont.collision(hitboxPos, this.direction);
                 if (dontReachesUp && noCollision) {
-                    this.sprite.y -= this.speed;
-                    this.hitboxShape.y -= this.speed;
+                    this.container.y -= this.speed;
+                    this.hitbox.absoluteY = this.container.y + this.hitbox.y;
+                    this.positionUpdated = true;
+                } else {
+                    this.positionUpdated = false;
                 }
                 break;
         }
@@ -166,14 +191,17 @@ export class Character {
     public getProperty(property: string) {
         let object: any;
         switch (property) {
-            case 'sprite':
-                object = this.sprite;
+            case 'container':
+                object = this.container;
+                break;
+            case 'speed':
+                object = this.speed;
+                break;
+            case 'direction':
+                object = this.direction;
                 break;
             case 'config':
                 object = this.config;
-                break;
-            case 'hitbox-shape':
-                object = this.hitboxShape;
                 break;
 
         }

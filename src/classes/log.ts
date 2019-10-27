@@ -17,7 +17,7 @@ export class Log {
         this.successColor = 'color: green';
         this.warningColor = 'background: yellow; color: orange';
         this.errorColor = 'background: red, color: white';
-        this.classBlockWidth = 8;
+        this.classBlockWidth = 10;
     }
 
     public info(message: string) {

@@ -18,8 +18,9 @@ export class Map {
     private log: Log;
     private id: string;
     private name: string;
+    private size: object;
     private loader: Loader;
-    private assets: any;
+    private assets: object;
     private mapsConfig: any;
     private config: any;
     private tileset: Tileset;
@@ -39,6 +40,10 @@ export class Map {
         this.config = this.mapsConfig[this.id];
         this.tileset = new Tileset(this.cont, this.config.tileset);
         this.mainCharacter = new MainCharacter(this.cont, 'character01');
+        this.size = {
+            height: this.config.content.length * 32,
+            width: this.config.content[0].length * 32
+        };
         this.pnjList = [];
         this.grid = [[]];
         this.buildGrid();
@@ -92,28 +97,14 @@ export class Map {
     }
 
     public collision(object: any, direction: string) {
-        let cellI = Math.floor(object.topLeft.x / 32);
-        let cellJ = Math.floor(object.topLeft.y / 32);
-        switch (direction) {
-            case 'down':
-                cellJ++;
-                break;
-            case 'left':
-                cellI--;
-                break;
-            case 'right':
-                cellI++;
-                break;
-            case 'up':
-                cellJ--;
-                break;
-        }
-
+        const x = object.topLeft.x + (object.width / 2);
+        const y = object.topLeft.y + (object.height / 2);
+        const cellI = Math.floor(x / 32);
+        const cellJ = Math.floor(y / 32);
         const cellBox = {
             topLeft: {x: cellI * 32, y: cellJ * 32},
             bottomRight: {x: (cellI + 1) * 32, y: (cellJ + 1) * 32},
         };
-        console.log(cellI, cellJ);
         let wall = false;
         if (this.grid[cellJ]) {
             if (this.grid[cellI]) {
@@ -148,6 +139,9 @@ export class Map {
                 break;
             case 'assets':
                 object = this.assets;
+                break;
+            case 'size':
+                object = this.size;
                 break;
         }
         return object;

@@ -37,7 +37,11 @@ export class Controller {
     }
 
     public onMapLoaded() {
-        return this.game.onMapLoaded();
+        this.game.onMapLoaded();
+    }
+
+    public onCharPosUpdated() {
+        this.view.onCharPosUpdated();
     }
 
     public getInputProperty(property: string) {
