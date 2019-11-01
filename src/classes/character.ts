@@ -14,7 +14,7 @@ export class Character {
     protected container: any;
     protected sprite: any;
     protected hitbox: any;
-    protected speed = 2;
+    protected speed = 5;
     protected walking = false;
     protected charsetsConfig: any;
     protected config: any;
