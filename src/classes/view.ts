@@ -51,54 +51,43 @@ export class View {
         const character = this.cont.getMainCharacterProperty('container');
         const speed = this.cont.getMainCharacterProperty('speed');
         const direction = this.cont.getMainCharacterProperty('direction');
+        let limit;
 
         if (mapSize.height >= screenSize.height) {
-            
-            let limitLeft: number = 0;
-            let limitRight: number = 0;
-            let limitMap: number = 0;
-            let limitTop: number = 0;
-            let limitBottom: number = 0;
-
-            if (direction === 'left' || direction === 'right') {
-                limitLeft = screenSize.width / 2;
-                limitRight = mapSize.width - (screenSize.width / 2);
-                limitMap = mapSize.width - screenSize.width;
-            } else if (direction === 'up' || direction === 'down') {
-                limitTop = screenSize.height / 2;
-                limitBottom = mapSize.height - (screenSize.height / 2);
-                limitMap = mapSize.height - screenSize.height;
-            }
 
             switch (direction) {
                 case 'down':
-                    if (character.y >= limitTop && character.y <= limitBottom) {
-                        const nextPos = Math.abs(this.stage.y - speed);
-                        if (nextPos >= 0 && nextPos <= limitMap) {
+                    limit = screenSize.height / 2;
+                    if (character.y >= limit) {
+                        const nextPos = this.stage.y - speed;
+                        if (nextPos >= - (mapSize.height - screenSize.height)) {
                             this.stage.y -= speed;
                         }
                     }
                     break;
                 case 'left':
-                    if (character.x >= limitLeft && character.x <= limitRight) {
-                        const nextPos = Math.abs(this.stage.x + speed);
-                        if (nextPos >= 0 && nextPos <= limitMap) {
-                            this.stage.y += speed;
+                        limit = Math.abs(this.stage.x) + screenSize.width / 2;
+                        if (character.x <= limit) {
+                            const nextPos = this.stage.x + speed;
+                            if (nextPos <= 0) {
+                                this.stage.x += speed;
+                            }
                         }
-                    }
                     break;
                 case 'right':
-                    if (character.x >= limitLeft && character.x <= limitRight) {
-                        const nextPos = Math.abs(this.stage.x - speed);
-                        if (nextPos >= 0 && nextPos <= limitMap) {
-                            this.stage.x -= speed;
+                        limit = screenSize.width / 2;
+                        if (character.x >= limit) {
+                            const nextPos = this.stage.x - speed;
+                            if (nextPos >= - (mapSize.width - screenSize.width)) {
+                                this.stage.x -= speed;
+                            }
                         }
-                    }
                     break;
                 case 'up':
-                    if (character.y >= limitTop && character.y <= limitBottom) {
-                        const nextPos = Math.abs(this.stage.y + speed);
-                        if (nextPos >= 0 && nextPos <= limitMap) {
+                    limit = Math.abs(this.stage.y) + screenSize.height / 2;
+                    if (character.y <= limit) {
+                        const nextPos = this.stage.y + speed;
+                        if (nextPos <= 0) {
                             this.stage.y += speed;
                         }
                     }
