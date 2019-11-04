@@ -185,7 +185,7 @@ export class Character {
     }
 
     public automove() {
-        console.log('move');
+        console.log('move')
     }
 
     public getProperty(property: string) {

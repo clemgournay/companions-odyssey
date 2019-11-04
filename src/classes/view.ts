@@ -20,10 +20,8 @@ export class View {
         const mapSize = this.cont.getMapProperty('size');
         this.mapContainer = new Container();
         this.stage.addChild(this.mapContainer);
-        console.log(mapGrid);
 
         for (const row of mapGrid) {
-            console.log(row)
             for (const cell of row) {
                 const tile = new Sprite(tilesetSS).set({x: cell.j * 32, y: cell.i * 32});
                 tile.gotoAndStop(cell.content.index);
@@ -37,6 +35,8 @@ export class View {
         this.mapContainer.cache(0, 0, mapSize.width, mapSize.height);
 
         const mainCharacter = this.cont.getMainCharacterProperty('container');
+
+        const pnjList = this.cont.getMapProperty('pnj-list');
         this.stage.addChild(mainCharacter);
 
     }

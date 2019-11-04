@@ -44,7 +44,7 @@ export class Map {
             height: this.config.content.length * 32,
             width: this.config.content[0].length * 32
         };
-        this.pnjList = [];
+        this.pnjList = [new Character(this.cont, 'character02')];
         this.grid = [[]];
         this.buildGrid();
     }
@@ -64,6 +64,9 @@ export class Map {
 
     public onAssetsLoaded() {
         this.log.success('Successfully loaded');
+        for (const character of this.pnjList) {
+            character.attachAssets(this.assets);
+        }
         this.mainCharacter.attachAssets(this.assets);
         this.tileset.attachAssets(this.assets);
         this.cont.onMapLoaded();
@@ -142,6 +145,9 @@ export class Map {
                 break;
             case 'size':
                 object = this.size;
+                break;
+            case 'pnj-list':
+                object = this.pnjList;
                 break;
         }
         return object;
